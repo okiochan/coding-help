@@ -35,8 +35,6 @@ treap *merge(treap *l, treap *r)
 		return l;
 	}
 }
-
-
 void dump(treap *t) {
 	if (!t)return;
 	dump(t->l);

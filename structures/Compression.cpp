@@ -1,5 +1,4 @@
-struct Compression
-{
+struct Compression {
 	vector<int> a;
 	Compression() {}
 	void Reserve(int n) { a.reserve(n); }
