@@ -1,17 +1,29 @@
 struct node {
-    int val;
+    int minv, maxv;
+    node() { minv = INF; maxv = 0;}
+    node(int minv, int maxv) : minv(minv), maxv(maxv) {}
+    node(const node& a, const node&b) {
+        maxv = max(a.maxv, b.maxv);
+        minv = min(a.minv, b.minv);
+    }
 };
 
 struct seg_tree {
-    int n;
+    int ds;
     vector <node> tree;
 
-    seg_tree(int n) :n(n) { tree.resize(4 * n + 10); }
+    seg_tree(int n) {
+        for (ds=1;ds<n;ds*=2);
+        tree.assign(2*ds+1, node()); 
+    }
 
-    void build(int *a) { build(1, 0, n - 1, a); }
-    void build(int v, int tl, int tr, int *a) {
+    void build(vec &a) { build(1, 0, ds - 1, a); }
+    void build(int v, int tl, int tr, vec &a) {
         if (tl == tr) {
-            tree[v].val = a[tl];
+            if(tl < sz(a)) {
+                tree[v].minv = a[tl];
+                tree[v].maxv = a[tl];
+            }
             return;
         }
 
@@ -19,36 +31,35 @@ struct seg_tree {
         build(v * 2, tl, m, a);
         build(v * 2 + 1, m + 1, tr, a);
 
-        tree[v].val = tree[v * 2].val + tree[v * 2 + 1].val;
+        tree[v] = node(tree[v + v], tree[v + v + 1]);
     }
 
-    int sum(int l, int r) { sum(1, 0, n - 1, l, r); }
-    int sum(int v, int tl, int tr, int l, int r) {
-        if (l > r) return 0;
+    node get(int l, int r) { return get(1, 0, ds - 1, l, r); }
+    node get(int v, int tl, int tr, int l, int r) {
+        if (l > r || tr < l || tl > r) return node();
 
-        if (l == tl && r == tr)
-            return tree[v].val;
+        if (l <= tl && tr <= r) {
+            return tree[v];
+        }
 
         int mid = (tl + tr) / 2;
-        return sum(v * 2, tl, mid, l, min(r, mid))
-            + sum(v * 2 + 1, mid + 1, tr, max(l, mid + 1), r);
+        return node(get(v * 2, tl, mid, l, r), get(v * 2 + 1, mid + 1, tr, l, r));
     }
 
-    void update(int pos, int val) { update(1, 0, n - 1, pos, val); }
-    void update(int v, int tl, int tr, int pos, int val) {
+    void update(int pos, node noda) { update(1, 0, ds - 1, pos, noda); }
+    void update(int v, int tl, int tr, int pos, node noda) {
         if (tl == tr) {
-            tree[v].val = val;
+            tree[v] = noda;
             return;
         }
 
         int m = (tl + tr) / 2;
-
         if (pos <= m) {
-            update(v * 2, tl, m, pos, val);
+            update(v * 2, tl, m, pos, noda);
         } else {
-            update(v * 2 + 1, m + 1, tr, pos, val);
+            update(v * 2 + 1, m + 1, tr, pos, noda);
         }
 
-        tree[v].val = tree[v * 2].val + tree[v * 2 + 1].val;
+        tree[v] = node(tree[v + v], tree[v + v + 1]);
     }
 };
