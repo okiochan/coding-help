@@ -5,7 +5,7 @@ struct pt {
 
     double norm() { return sqrt(x*x+y*y); }
     void read() { cin >> x >> y; }
-    void sout() { cout << x << " " << y << endl; }
+    void sout() { printf("%.15lf %.15lf\n", x,y);  }
     pt e() { return *this / norm(); }
 
     pt operator+(pt p) const { return pt(x+p.x, y+p.y); }
@@ -18,9 +18,10 @@ struct pt {
     
 };
 
-pt intersectLine(pt a, pt b, pt c, pt d) {
-    double t = -(~(d - c)*(a - c)) / (~(d - c)*(b - a));
-    return (b - a)*t + a;
+pt intersectLine(pt a, pt va, pt c, pt vb) {
+    // if((~vb*va) == 0) parall
+    double t = -(~vb*(a - c)) / (~vb*va);
+    return va*t + a;
 }
 
 double len(pt a, pt b) {
