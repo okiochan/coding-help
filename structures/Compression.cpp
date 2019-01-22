@@ -1,4 +1,5 @@
 struct Compression {
+	//input data type
 	vector<int> a;
 	Compression() {}
 	void Reserve(int n) { a.reserve(n); }
